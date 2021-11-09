@@ -10,6 +10,7 @@ from joblib import Parallel, delayed
 import math
 import argparse
 import random
+import pandas as pd
 
 parser = argparse.ArgumentParser(description='Walk a Graph along Metapaths and store complete walks.')
 
@@ -32,7 +33,7 @@ def getConfiguredLogger(name):
     import logging
     import logging.config
 
-    with open("src/logger.yaml", "r") as file:
+    with open("utils/logger.yaml", "r") as file:
         config = load(file, Loader=Loader)
 
     logging.config.dictConfig(config)
@@ -44,8 +45,10 @@ def loadGraphData(path):
     dataset_location = os.path.expanduser(path)
     if path[-6:] == "pickle":
         g_nx = nx.read_gpickle(dataset_location)
-    else:
+    elif path[-7:] == "graphml":
         g_nx = nx.read_graphml(dataset_location)
+
+
 
     logger.debug("Number of nodes {} and number of edges {} in graph.".format(g_nx.number_of_nodes(), g_nx.number_of_edges()))
 
@@ -300,8 +303,6 @@ if __name__ == '__main__':
     # Initalize global variables
     logger = getConfiguredLogger(__name__)
 
-    #path = "/home/fratajczak/benchmark/data/drkg/train.gpickle"
-    #path = '/home/fratajczak/Documents/hetionet/folds/train4.graphml'
     path = args.input
 
     metapaths = asymmetric_metapaths
