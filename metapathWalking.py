@@ -33,7 +33,7 @@ def getConfiguredLogger(name):
     import logging
     import logging.config
 
-    with open("utils/logger.yaml", "r") as file:
+    with open("logger.yaml", "r") as file:
         config = load(file, Loader=Loader)
 
     logging.config.dictConfig(config)
@@ -57,7 +57,7 @@ def loadGraphData(path):
      if "source" in d.keys():
         del d["source"]
 
-    stellar_g_nx = StellarGraph.from_networkx(g_nx)
+    stellar_g_nx = StellarGraph.from_networkx(g_nx.to_undirected())
     logger.debug("Number of nodes {} and number of edges {} in graph.".format(stellar_g_nx.number_of_nodes(), stellar_g_nx.number_of_edges()))
     logger.debug(stellar_g_nx.node_types)
 

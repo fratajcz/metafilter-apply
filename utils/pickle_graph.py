@@ -18,7 +18,7 @@ args = parser.parse_args()
 
 df = pd.read_csv(args.input,names=["head","label","tail"],sep="\t") 
 
-G = nx.from_pandas_edgelist(df,create_using=nx.MultiGraph(),source="head",target ="tail",edge_attr=True)
+G = nx.from_pandas_edgelist(df,create_using=nx.MultiDiGraph(),source="head",target ="tail",edge_attr=True)
 
 
 
