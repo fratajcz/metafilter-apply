@@ -1,6 +1,8 @@
 # Purpose
 
-This Repository contains the code to conduct the metapath-based filtering on knowledge graphs as described in "Task-Driven Knowledge Graph Filtering Improves Prioritizing Drugs for Repurposing" (DOI: [10.21203/rs.3.rs-721705/v1](https://doi.org/10.21203/rs.3.rs-721705/v1). . The code in this repository will walk you through the creation of a modified graph, using Hetionet and DRKG as examples. 
+This Repository contains the code to conduct the metapath-based filtering on knowledge graphs as described in "Task-Driven Knowledge Graph Filtering Improves Prioritizing Drugs for Repurposing" (DOI: [10.21203/rs.3.rs-721705/v1](https://doi.org/10.21203/rs.3.rs-721705/v1).  The code in this repository will walk you through the creation of a modified graph, using Hetionet and DRKG as examples. 
+
+If you just want to run the experiments or use the datasets mentioned in the paper, you can find the datasets ready-to-use [here](https://doi.org/10.5281/zenodo.5638999) and the code to run the experiments [here](https://github.com/fratajcz/metafilter-experiment) .
 
 # Installation
 
@@ -77,4 +79,6 @@ python3 utils/delete_disconnected.py -i hetionet_subset_train.txt -t test.txt -v
 This will yield the new test and validation edge lists ```cleaned_test.tsv``` and ```cleaned_val.tsv```and report on how many edges have been removed.
 
 
-There is no further postprocessing necessary, you can now use your original and modified versions of the graph, in our example here ```hetionet_train```and ```hetionet_subset_train```to train your favourite model and observe the differences in performance on the holdout sets. If you plan to use your edgelist in a framework that assumes edges to be directed, consider adding inverse edges where appropriate.
+There is no further postprocessing necessary, you can now use your original and modified versions of the graph, in our example here ```hetionet_train```and ```hetionet_subset_train```to train your favourite model and observe the differences in performance on the holdout sets. If you plan to use your edgelist in a framework that assumes edges to be directed, consider adding inverse edges where appropriate. You can use the script ```utils/add_inverse.sh```and store the result in a new file. Now you are ready and set to run some [experiments](https://github.com/fratajcz/metafilter-experiment).
+
+
