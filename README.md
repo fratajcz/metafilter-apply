@@ -1,6 +1,6 @@
 # Purpose
 
-This Repository contains the code to conduct the metapath-based filtering on knowledge graphs as described in "Task-Driven Knowledge Graph Filtering Improves Prioritizing Drugs for Repurposing" (DOI: [10.21203/rs.3.rs-721705/v1](https://doi.org/10.21203/rs.3.rs-721705/v1).  The code in this repository will walk you through the creation of a modified graph, using Hetionet and DRKG as examples. 
+This Repository contains the code to conduct the metapath-based filtering on knowledge graphs as described in "Task-Driven Knowledge Graph Filtering Improves Prioritizing Drugs for Repurposing" (DOI: [10.21203/rs.3.rs-721705/v1](https://doi.org/10.21203/rs.3.rs-721705/v1)).  The code in this repository will walk you through the creation of a modified graph, using Hetionet and DRKG as examples. 
 
 If you just want to run the experiments or use the datasets mentioned in the paper, you can find the datasets ready-to-use [here](https://doi.org/10.5281/zenodo.5638999) and the code to run the experiments [here](https://github.com/fratajcz/metafilter-experiment) .
 
@@ -8,7 +8,7 @@ If you just want to run the experiments or use the datasets mentioned in the pap
 
 The code in this repo was developed and tested on CentOS Linux 7.9 and Ubuntu 18.04 LTS.
 
-To set up the necessary environment to run the code we suggest the user to use [Anacona](https://www.anaconda.com/).
+To set up the necessary environment to run the code we suggest the user to use [Anaconda](https://www.anaconda.com/).
 
 Install the necessary conda env by using:
 
