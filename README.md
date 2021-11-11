@@ -54,7 +54,7 @@ elif "your-graph-name" in path:
 
 ## Filtering
 
-After the walking process, you should have a ```walks.txt```file containing your completed walks. To filter your graph to only contain the nodes which appear in these walks, first, determine all unique nodes in the graph:
+After the walking process, you should have a ```walks.txt```file containing your completed walks. To filter your graph to only contain the nodes which appear in these walks, first, determine all unique nodes in the walks that you just produced:
 
 ```
 ./process_walks.sh walks.txt
@@ -66,7 +66,7 @@ which will give you a file called ```unique_walks.txt``` where each line will co
 python3 subset_graph.py -g hetionet_train.gpickle -l unique_walks.txt -o hetionet_subset_train.tsv
 ```
 
-```subset_graph.py``` can ingest graphs of the types ```gpickle```, ```graphml``` and ```tsv```. If you are using ```tsv```, make sure it has only 3 columns, which should be ```head_node  relation    tail_node```.
+```subset_graph.py``` can ingest graphs of the types ```gpickle```, ```graphml``` and ```tsv```. If you are using ```tsv```, make sure it has only 3 columns, which should be ```head_entity  relation    tail_entity```.
 
 ## Postprocessing
 
