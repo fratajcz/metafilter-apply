@@ -18,6 +18,8 @@ parser.add_argument('--input', "-i", type=str,
                     help='path to a graphml or gpickle file of hetionet or drkg')
 parser.add_argument('--output', "-o", type=str,
                     help='path to store the walks')
+parser.add_argument('--metapaths', "-p", type=str, default="",
+                    help='metapaths consisting of comma seperated node types, one metapath per line.')
 parser.add_argument('--njobs', "-n", type=int, default=4,
                     help='number of concurrent workers for walking')
 parser.add_argument('--nwalks', "-w", type=int, default=5000,
@@ -47,8 +49,6 @@ def loadGraphData(path):
         g_nx = nx.read_gpickle(dataset_location)
     elif path[-7:] == "graphml":
         g_nx = nx.read_graphml(dataset_location)
-
-
 
     logger.debug("Number of nodes {} and number of edges {} in graph.".format(g_nx.number_of_nodes(), g_nx.number_of_edges()))
 
@@ -307,20 +307,28 @@ if __name__ == '__main__':
 
     metapaths = asymmetric_metapaths
 
-    if "drkg" in path:
+    if args.metapaths == "":
+        if "drkg" in path:
 
-        AT = 'Atc'
-        additional_metapaths = [[C,AT,C,D],
-        [C,AT,C,D,D],
-        [C,AT,C,G,D]]
+            AT = 'Atc'
+            additional_metapaths = [[C,AT,C,D],
+            [C,AT,C,D,D],
+            [C,AT,C,G,D]]
 
-        metapaths = metapaths + additional_metapaths
-        
-    elif "hetionet" in path:
-        metapaths = [[":" + node_type for node_type in metapath] for metapath in metapaths]
+            metapaths = metapaths + additional_metapaths
+            
+        elif "hetionet" in path:
+            metapaths = [[":" + node_type for node_type in metapath] for metapath in metapaths]
+        else:
+            raise ValueError("If no metapaths are specified via --metpath, then the input path specified via --input must contain the words 'hetionet' or 'drkg'.")
+    else:
+        metapaths = []
+        with open(args.metapaths,"r") as file:
+            for metapath in file:
+                metapaths.append([node_type for node_type in metpath.split(",")])
 
     logger.debug(metapaths)
 
     allTheWalks = getWalksParallel(metapaths,numWalks=5000)
-    exit(0)
+    
 
