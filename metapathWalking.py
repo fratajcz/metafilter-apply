@@ -59,7 +59,7 @@ def loadGraphData(path):
 
     stellar_g_nx = StellarGraph.from_networkx(g_nx.to_undirected())
     logger.debug("Number of nodes {} and number of edges {} in graph.".format(stellar_g_nx.number_of_nodes(), stellar_g_nx.number_of_edges()))
-    logger.debug(stellar_g_nx.node_types)
+    logger.debug("Node types in the graph: {}".format(stellar_g_nx.node_types))
 
     del g_nx
 
@@ -305,9 +305,12 @@ if __name__ == '__main__':
 
     path = args.input
 
-    metapaths = asymmetric_metapaths
+    
 
-    if args.metapaths == "":
+    if args.metapaths == "default":
+
+        metapaths = asymmetric_metapaths
+
         if "drkg" in path:
 
             AT = 'Atc'
@@ -318,16 +321,16 @@ if __name__ == '__main__':
             metapaths = metapaths + additional_metapaths
             
         elif "hetionet" in path:
-            metapaths = [[":" + node_type for node_type in metapath] for metapath in metapaths]
+            metapaths =  metapaths#[[":" + node_type for node_type in metapath] for metapath in metapaths]
         else:
             raise ValueError("If no metapaths are specified via --metpath, then the input path specified via --input must contain the words 'hetionet' or 'drkg'.")
     else:
         metapaths = []
         with open(args.metapaths,"r") as file:
             for metapath in file:
-                metapaths.append([node_type for node_type in metpath.split(",")])
+                metapaths.append([node_type for node_type in metapath.split(",")])
 
-    logger.debug(metapaths)
+    logger.debug("Metapaths that will be walked along: {}".format(metapaths))
 
     allTheWalks = getWalksParallel(metapaths,numWalks=5000)
     
