@@ -38,7 +38,7 @@ with open(args.input,"r") as input:
     counter = 0
     percentage = 1
     for i, line in enumerate(input):
-        unique_ids.update(line.split(" "))
+        unique_ids.update(line.strip().split(" "))
         counter += 1
         if counter == ten_percent:
             logger.info("Processed {}0% of walks".format(percentage))

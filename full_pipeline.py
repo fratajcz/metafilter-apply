@@ -33,6 +33,8 @@ parser.add_argument('--walking_nstarts', "-s", type=int, default=1000,
                     help='number of starts per node of first node type for each metapath')
 parser.add_argument('--walking_length', "-l", type=int, default=100,
                     help='desired length of concatenated metapaths')
+parser.add_argument('--walking_output', type=str, default="walks.txt",
+                    help='file to store concatenated walks')         
 
 
 args = parser.parse_args()

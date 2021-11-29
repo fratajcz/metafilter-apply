@@ -256,7 +256,7 @@ def buildWalks(forwardDict,backwardDict,length,numWalks,metapath):
         else:
             times_tried += 1
         if times_tried >= max_tries:
-            logger.warning("Reached 1000 consecutive futile tries for walk concatenation for metapath {}.\nEither increase number of starts or decrease desired length.".format(metapath))
+            logger.warning("Reached 1000 consecutive futile tries for walk concatenation for metapath {}.\nEither increase number of starts per entity or decrease desired length.".format(metapath))
             break
 
     return walks
@@ -270,7 +270,19 @@ def getWalksForThisMetapath(metapath,numWalks):
 
     forwardwalk_dict,backwalk_dict = constructDicts(good_walks_forward,good_walks_backward)
 
+    logger.info("Found {} complete forward walks starting from {} nodes in metapath {}".format(sum([len(walk) for walk in forwardwalk_dict.values()]),
+                                                                                                len(forwardwalk_dict),
+                                                                                                metapath))
+
+    logger.info("Found {} complete backward walks starting from {} nodes in metapath {}".format(sum([len(walk) for walk in backwalk_dict.values()]),
+                                                                                                len(backwalk_dict),
+                                                                                                metapath))
+
     walks = buildWalks(forwardwalk_dict,backwalk_dict,args.length,numWalks,metapath) # [[walk],[walk]]
+
+    logger.info("Built {} concatenated walks of length {} for metapath {}".format(len(walks),
+                                                                                  args.length,
+                                                                                  metapath))
 
     writeWalks_byline(walks,path=args.output)
 
@@ -340,6 +352,13 @@ if __name__ == '__main__':
                 metapaths.append([node_type for node_type in metapath.strip().split(",")])
 
     logger.debug("Metapaths that will be walked along: {}".format(metapaths))
+
+    try:
+        os.remove(args.output)
+        logger.warning("File to store the concatenated walks already exists, deleting file and writing a new one.")
+    except OSError:
+        pass
+        
 
     allTheWalks = getWalksParallel(metapaths,numWalks=5000)
     
