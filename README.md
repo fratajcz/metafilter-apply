@@ -6,17 +6,32 @@ If you just want to run the experiments or use the datasets mentioned in the pap
 
 # Installation
 
-The code in this repo was developed and tested on CentOS Linux 7.9 and Ubuntu 18.04 LTS.
+The code in this repo was developed and tested on CentOS Linux 7.9, Ubuntu 18.04 LTS and MacOS Big Sur.
 
 To set up the necessary environment to run the code we suggest the user to use [Anaconda](https://www.anaconda.com/).
 
 Install the necessary conda env by using:
 
 ```
-conda env create -f environment.yml
+conda env create -f environment_full.yml
 ```
 
-Or install the packages that are mentioned in ```environment.yml```manually.
+If this does not work due to platform-specific package versions (i.e. on MacOS), use the less precise environment file:
+
+```
+conda env create -f environment_minimal.yml
+```
+
+This is tested on MacOS Big Sur and lets you run the code in this repository, however, different package versions might produce warnings, depending on your OS.
+
+Or install the packages that are mentioned in ```environment_full.yml```manually.
+
+Activate your environment with 
+
+```
+conda activate walk
+```
+
 
 # Usage
 
@@ -81,7 +96,7 @@ After the walking process, you should have a ```walks.txt```file containing your
 ./process_walks.py --input walks.txt --output unique_ids.txt
 ```
 
-which will give you a file called ```unique_walks.txt``` where each line will contain one unique node identifier. Now, subset your initial graph that you used during the walking by calling
+which will give you a file called ```unique_ids.txt``` where each line will contain one unique node identifier. Now, subset your initial graph that you used during the walking by calling
 
 ```
 python3 subset_graph.py -g hetionet_train.gpickle -l unique_ids.txt -o hetionet_subset_train.tsv

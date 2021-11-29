@@ -1,0 +1,10 @@
+name: walk
+channels:
+  - defaults
+  - stellargraph
+dependencies:
+  - stellargraph
+  - pip
+  - pip:
+    - pyyaml
+    - chardet
