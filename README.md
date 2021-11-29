@@ -32,13 +32,12 @@ Activate your environment with
 conda activate walk
 ```
 
-
 # Usage
 
 ## Quickstart
 
 To allow a quick testrun and provide a high-level wrapper we have compiled ```full_pipeline.py```which gives you access to all individual scripts' arguments.
-Since the pipeline differs if the graph should be used as a whole (i.e. because a holdout set is already created) or if train/val/test splitting should to be performed by the pipeline, we give two examples on an extremely reduce version of hetionet. Bear in mind that this only serves as a minimal working example and does not generate meaningful results!
+Since the pipeline differs if the graph should be used as a whole (i.e. because a holdout set is already created) or if train/val/test splitting should to be performed by the pipeline, we give two examples on an extremely reduced version of Hetionet. Bear in mind that this only serves as a minimal working example and does not generate meaningful results!
 
 ### No Splitting
 ```
