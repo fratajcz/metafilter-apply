@@ -24,7 +24,7 @@ diseases = [node for node in modified_entities if node.startswith("Disease")]
 compounds = [node for node in modified_entities if node.startswith("Compound")]
 
 valid_edges = pd.read_csv(args.valid,sep="\t",names=["compound","relation","disease"])
-test_edges = pd.read_csv(args.valid,sep="\t",names=["compound","relation","disease"])
+test_edges = pd.read_csv(args.test,sep="\t",names=["compound","relation","disease"])
 
 # If a compound or a disease didnt make it into the subsampled version of the graph, adjacent "treats" edges are deleted from ground truth
 

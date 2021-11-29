@@ -20,6 +20,32 @@ Or install the packages that are mentioned in ```environment.yml```manually.
 
 # Usage
 
+## Quickstart
+
+To allow a quick testrun and provide a high-level wrapper we have compiled ```full_pipeline.py```which gives you access to all individual scripts' arguments.
+Since the pipeline differs if the graph should be used as a whole (i.e. because a holdout set is already created) or if train/val/test splitting should to be performed by the pipeline, we give two examples on an extremely reduce version of hetionet. Bear in mind that this only serves as a minimal working example and does not generate meaningful results!
+
+### No Splitting
+```
+python3 full_pipeline.py --input data/hetionet_train_toy.txt  -o hetionet_train_toy_subset.txt -p data/metapaths_toy.txt -n 4 -w 1 -s 1
+```
+This is a minimal working example which runs through the whole process and should finish within a few minutes. It produces a logfile ```run.log``` which contains minute details of the run. This run walks four metapaths (given in ```data/metapaths_toy.txt```), each with its own concurrent walker (```-n 4```), starting once on every node (```-s 1```) and producing one concatenated walk per metapath (```-w 1```). Note that you might see a warning that the walks could not be concatenated for some metapaths since we sample only very few short walks in this example. Thats why the default parameters are ```-w 5000 -s 1000```.
+
+The result is then stored in ```hetionet_train_toy_subset.txt```.
+
+
+### Perform train/val/test split internally
+```
+python3 full_pipeline.py --input data/hetionet_full_toy.txt -p data/metapaths_toy.txt -n 4 -w 1 -s 1 -x 0.2
+```
+
+The additional flag ```-x 0.2``` triggers the internal train/val/test split, setting 20% of treats-edges aside, 10% for validation and 10% for test. 
+After walking and modifying the graph, ```utils/delete_disconnected.py```is run automatically and makes sure that nodes that are removed in the modification process are also removed from the test and validation set. Note that, since this is only a minimal working example, this might remove all edges from the test and validation set.
+
+If you use internal splitting, the method will always produce the files ```train.txt```,```train_subset.txt```,```valid.txt```,```test.txt```,```valid_cleaned.txt```,```test_cleaned.txt```, no matter what you specify as output file. ```train.txt``` is the training set from the original graph, ```train_subset.txt``` is the modified training set and the cleaned val and test sets should be used for validation and testing.
+
+These examples should give you an impression on how to apply the metapath based filtering method on your own dataset. For more details, continue reading.
+
 ## Preprocessing 
 
 First, make sure your graph is in the shape you want it to be in. If you use your own Knowledge Graph, make sure that it does not contain any ambiguous or misleading edges. For example, on DRKG, several relations between Compounds and Diseases have a "treats" character, but are worded differently. Therefore, we have added a script that unifies all these relations on DRKG (```utils/treats_edge_union.sh```). Feel free to adapt that script to your own needs. Also, your graph should not yet contain inverse edges, as this would create very easy to predict holdout samples in the next step and potentially also influence the walking process! Add these inverse edges in the very last step if you need them.
@@ -45,25 +71,20 @@ to ingest the graph ```hetionet_train.gpickle```, use one concurrent walker and 
 
 The walking script can ingest graphs of the types ```gpickle``` and ```graphml```. If you have your graph in the form of an edgelist, i.e. ```tsv```, please see the last paragraph of the Preprocessing section on how to transform your graph into an appropriate ```gpickle```file.
 
-The walking script detects if your are using hetionet or drkg based on checking the input path that you provide, so make sure you name it appropriately. If you want to use other graphs and/or other selections of metapaths, please adjust the main method in the script by loading your own metapaths similar to the examples that you can find there, i.e.:
-
-```
-elif "your-graph-name" in path:
-        metapaths = your_metapaths
-```
+The walking script detects if your are using hetionet or drkg based on checking the input path that you provide, so make sure you name it appropriately. If you want to use other graphs and/or other selections of metapaths, please provide them in comma seperated fashion, one metapath per line, via the argument ```-p``` (see Quickstart example).
 
 ## Filtering
 
 After the walking process, you should have a ```walks.txt```file containing your completed walks. To filter your graph to only contain the nodes which appear in these walks, first, determine all unique nodes in the walks that you just produced:
 
 ```
-./process_walks.sh walks.txt
+./process_walks.py --input walks.txt --output unique_ids.txt
 ```
 
 which will give you a file called ```unique_walks.txt``` where each line will contain one unique node identifier. Now, subset your initial graph that you used during the walking by calling
 
 ```
-python3 subset_graph.py -g hetionet_train.gpickle -l unique_walks.txt -o hetionet_subset_train.tsv
+python3 subset_graph.py -g hetionet_train.gpickle -l unique_ids.txt -o hetionet_subset_train.tsv
 ```
 
 ```subset_graph.py``` can ingest graphs of the types ```gpickle```, ```graphml``` and ```tsv```. If you are using ```tsv```, make sure it has only 3 columns, which should be ```head_entity  relation    tail_entity```.

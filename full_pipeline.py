@@ -15,7 +15,7 @@ parser.add_argument('--input_sep', "-c", type=str, default = "::",
 parser.add_argument('--input_split_size', "-x", type=float, default = 0,
                     help='Size of holdout set. Test and val will each be half of that size. If 0 is passed, no split is performed. If you did not prepare you train/val/test splits, ' +
                          'beforehand and wish to do it within this script, pass the input graph as a tsv edgelist to avoid edge direction ambiguity in undirected gpickle formats.')
-parser.add_argument('--input_split_relation', "-r", type=str, default = "treats",
+parser.add_argument('--input_split_relation', "-r", type=str, default = "CtD",
                     help='Relation that should be split into train/val/test sets.')
 parser.add_argument('--input_split_seed', "-d", type=int, default = 1,
                     help='Relation that should be split into train/val/test sets.')
@@ -37,7 +37,7 @@ parser.add_argument('--walking_output', type=str, default="walks.txt",
                     help='file to store concatenated walks')         
 
 
-args = parser.parse_args()
+pargs = parser.parse_args()
 
 def main():
 
@@ -45,38 +45,46 @@ def main():
 
     logger.info("Starting Graph Modification Pipeline at {}".format(datetime.datetime.now()))
 
-    if args.input_split_size > 0.000001:
+    if pargs.input_split_size > 0.000001:
 
         logger.info("input.split_size greater than 0, performing train/test/val split.")
-        failure = os.system("python3 utils/split.py --input {} --treats_identifier {} --seed {}".format(args.input, args.input_split_relation, args.input_split_seed))
+        failure = os.system("python3 utils/split.py --input {} --treats_identifier {} --seed {} --holdout_size {}".format(pargs.input, pargs.input_split_relation, pargs.input_split_seed, pargs.input_split_size))
         if failure:
             exit(1)
-        args.input = "train.txt"
+        pargs.input = "train.txt"
+        pargs.output = "train_subset.txt"
 
-    if args.input[-7:] not in ["gpickle", "graphml"]:
+    if pargs.input[-7:] not in ["gpickle", "graphml"]:
         logger.info("Input not in gpickle or graphml format, gpickling it.")
-        input_base =  ".".join(args.input.split(".")[:-1])  
-        failure = os.system("python3 utils/pickle_graph.py --input {} --sep {} --output {}".format(args.input, args.input_sep, input_base + ".gpickle"))
+        input_base =  ".".join(pargs.input.split(".")[:-1])  
+        failure = os.system("python3 utils/pickle_graph.py --input {} --sep {} --output {}".format(pargs.input, pargs.input_sep, input_base + ".gpickle"))
         if failure:
             exit(1)
-        args.input = input_base + ".gpickle"
+        pargs.input = input_base + ".gpickle"
         
 
 
-    logger.info("Walking graph with {} parallel workers.".format(args.walking_njobs))
+    logger.info("Walking graph with {} parallel workers.".format(pargs.walking_njobs))
     failure = os.system("python3 metapathWalking.py --input {} --output {} --metapaths {} --njobs {} --nwalks {} --nstarts {} --length {}".format(
-                                                     args.input, "walks.txt" , args.walking_metapaths, args.walking_njobs, args.walking_nwalks, args.walking_nstarts, args.walking_length))
+                                                     pargs.input, pargs.walking_output , pargs.walking_metapaths, pargs.walking_njobs, pargs.walking_nwalks, pargs.walking_nstarts, pargs.walking_length))
     if failure:
             exit(1)
 
     logger.info("Walking is done, uniquifying node ids.")
-    failure = os.system("python3 process_walks.py --input walks.txt --output unique_ids.txt".format(args.walking_njobs))
+    failure = os.system("python3 process_walks.py --input walks.txt --output unique_ids.txt".format(pargs.walking_njobs))
     if failure:
             exit(1)
 
     logger.info("Unique node ids obtained, modifying original graph.")
-    failure = os.system("python3 subset_graph.py --list unique_ids.txt --graph {} --output {}".format(args.input, args.output))
+    failure = os.system("python3 subset_graph.py --list unique_ids.txt --graph {} --output {}".format(pargs.input, pargs.output))
     if failure:
+            exit(1)
+
+
+    if pargs.input_split_size > 0.000001:
+        logger.info("Removing disconnected nodes from validation and test set.")
+        failure = os.system("python3 utils/delete_disconnected.py -i {} -v valid.txt -t test.txt".format(pargs.output))
+        if failure:
             exit(1)
 
     logger.info("Modification of original graph is complete. Please make sure that none of the deleted nodes is incident to an edge from you test and val sets." +

@@ -13,7 +13,7 @@ handlers:
     class : logging.handlers.RotatingFileHandler
     formatter: simple
     level: DEBUG
-    filename: test.log
+    filename: run.log
     maxBytes: 1048576
     backupCount: 3
 root:

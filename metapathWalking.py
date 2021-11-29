@@ -28,7 +28,8 @@ parser.add_argument('--nstarts', "-s", type=int, default=1000,
                     help='number of starts per node of first node type for each metapath')
 parser.add_argument('--length', "-l", type=int, default=100,
                     help='desired length of concatenated walks')
-
+parser.add_argument('--nonsense', "-x", type=float, default=0,
+                    help='ignore this argument')
 
 args = parser.parse_args()
 
@@ -360,6 +361,6 @@ if __name__ == '__main__':
         pass
         
 
-    allTheWalks = getWalksParallel(metapaths,numWalks=5000)
+    allTheWalks = getWalksParallel(metapaths,args.nwalks)
     
 
