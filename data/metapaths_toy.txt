@@ -1,0 +1,4 @@
+Compound,Compound,Disease
+Compound,Disease,Disease
+Compound,SideEffect,Compound,Disease
+Compound,Disease,Symptom,Disease
