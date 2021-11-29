@@ -47,15 +47,7 @@ nodes_to_delete = set(all_nodes) - set(nodes_to_keep)
 graph.remove_nodes_from(nodes_to_delete)
 print(nx.info(graph))
 
-if "hetionet" in path:
-    # for hetionet:
-    label = nx.get_node_attributes(graph, 'label')
-    identifier = nx.get_node_attributes(graph, 'identifier')
-    with open(args.output, "w") as file:
-        for n1, n2, e in graph.edges(data=True):
-            file.writelines("{}::{}\t{}\t{}::{}\n".format(label[n1][1:],identifier[n1],e['label'],label[n2][1:],identifier[n2]))
-else:
-    # for DRKG:
-    with open(args.output, "w") as file:
-        for n1, n2, e in graph.edges(data=True):
-                file.writelines("{}\t{}\t{}\n".format(n1,e['label'],n2))
+
+with open(args.output, "w") as file:
+    for n1, n2, e in graph.edges(data=True):
+            file.writelines("{}\t{}\t{}\n".format(n1,e['label'],n2))

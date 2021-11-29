@@ -26,6 +26,8 @@ parser.add_argument('--nwalks', "-w", type=int, default=5000,
                     help='number of collected concatenated walks per metapath')
 parser.add_argument('--nstarts', "-s", type=int, default=1000,
                     help='number of starts per node of first node type for each metapath')
+parser.add_argument('--length', "-l", type=int, default=100,
+                    help='desired length of concatenated walks')
 
 
 args = parser.parse_args()
@@ -242,13 +244,20 @@ def recursiveConcat(forwardDict,backwardDict,walk,length):
                 [walk.append(x) for x in random.choice(backwardDict[walk[-1]])[1:]]    # if so, apend it to the walk
                 return recursiveConcat(forwardDict,backwardDict,walk,length)  # do it all again
 
-def buildWalks(forwardDict,backwardDict,length,numWalks):
+def buildWalks(forwardDict,backwardDict,length,numWalks,metapath):
     walks= []
-
+    max_tries = 1000
+    times_tried = 0
     while len(walks) < numWalks:
         walk = recursiveConcat(forwardDict,backwardDict, walk=random.choice(list(backwardDict.values()))[0],length=length)
         if walk is not None:
             walks.append(walk)
+            times_tried = 0
+        else:
+            times_tried += 1
+        if times_tried >= max_tries:
+            logger.warning("Reached 1000 consecutive futile tries for walk concatenation for metapath {}.\nEither increase number of starts or decrease desired length.".format(metapath))
+            break
 
     return walks
 
@@ -261,7 +270,7 @@ def getWalksForThisMetapath(metapath,numWalks):
 
     forwardwalk_dict,backwalk_dict = constructDicts(good_walks_forward,good_walks_backward)
 
-    walks = buildWalks(forwardwalk_dict,backwalk_dict,100,numWalks) # [[walk],[walk]]
+    walks = buildWalks(forwardwalk_dict,backwalk_dict,args.length,numWalks,metapath) # [[walk],[walk]]
 
     writeWalks_byline(walks,path=args.output)
 
@@ -328,7 +337,7 @@ if __name__ == '__main__':
         metapaths = []
         with open(args.metapaths,"r") as file:
             for metapath in file:
-                metapaths.append([node_type for node_type in metapath.split(",")])
+                metapaths.append([node_type for node_type in metapath.strip().split(",")])
 
     logger.debug("Metapaths that will be walked along: {}".format(metapaths))
 
