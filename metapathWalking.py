@@ -18,7 +18,7 @@ parser.add_argument('--input', "-i", type=str,
                     help='path to a graphml or gpickle file of hetionet or drkg')
 parser.add_argument('--output', "-o", type=str,
                     help='path to store the walks')
-parser.add_argument('--metapaths', "-p", type=str, default="",
+parser.add_argument('--metapaths', "-p", type=str, default="default",
                     help='metapaths consisting of comma seperated node types, one metapath per line.')
 parser.add_argument('--njobs', "-n", type=int, default=4,
                     help='number of concurrent workers for walking')
@@ -341,9 +341,8 @@ if __name__ == '__main__':
             [C,AT,C,G,D]]
 
             metapaths = metapaths + additional_metapaths
-            
         elif "hetionet" in path:
-            metapaths =  metapaths#[[":" + node_type for node_type in metapath] for metapath in metapaths]
+            metapaths =  metapaths  #[[":" + node_type for node_type in metapath] for metapath in metapaths]
         else:
             raise ValueError("If no metapaths are specified via --metpath, then the input path specified via --input must contain the words 'hetionet' or 'drkg'.")
     else:
